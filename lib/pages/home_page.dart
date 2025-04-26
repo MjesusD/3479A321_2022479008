@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           MaterialPageRoute(builder: (context) => const ListContent()),
                         );
                       },
-                      child: const Text('Ir a: "Lista de Contenido"'),
+                      child: const Text('Ir a: "Lista de Contenidos"'),
                     ),
                     
 
