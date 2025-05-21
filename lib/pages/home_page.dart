@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:aplicacion_3479a321lab3/pages/list_content.dart';
+import 'package:aplicacion_3479a321lab3/pages/about.dart';
 
 
 class MyHomePage extends StatefulWidget {
@@ -15,7 +16,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final logger = Logger();
 
-  /*CONTADOR 
+  //CONTADOR 
   int _counter = 0;
 
   void _increment() {
@@ -29,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _reset() {
     setState(() => _counter = 0);
   }
-  */ 
+  
 
   @override
   Widget build(BuildContext context) {
@@ -69,22 +70,22 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                /* TEXTO DEL CONTADOR 
+                // TEXTO DEL CONTADOR 
                 Text(
                   'Contador: $_counter',
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Theme.of(context).colorScheme.onPrimary,
                       ),
                 ),
-                */
+                
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                  
-                    // ElevatedButton(onPressed: _decrement, child: Text('-')),
-                    // ElevatedButton(onPressed: _increment, child: Text('+')),
-                    // ElevatedButton(onPressed: _reset, child: Text('Reset')),
+                     ElevatedButton(onPressed: _decrement, child: Text('-')),
+                     ElevatedButton(onPressed: _increment, child: Text('+')),
+                     ElevatedButton(onPressed: _reset, child: Text('Reset')),
                
                     ElevatedButton(
                       onPressed: () {
@@ -98,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     
 
                     // BOTÓN CON LÓGICA DE NAVEGACIÓN SEGÚN CONTADOR 
-                    /*
+                    
                     ElevatedButton(
                       onPressed: () {
                         if (_counter % 2 == 0) {
@@ -115,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                       child: const Text('Ir según el contador'),
                     ),
-                    */
+                    
                     
                   ],
                 ),
