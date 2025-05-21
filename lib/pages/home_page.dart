@@ -13,15 +13,56 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // Constructor
+  _MyHomePageState() {
+    logger.i("_MyHomePageState - mounted: $mounted");
+  }
+
   @override
   void initState() {
     super.initState();
-    logger.i("initState: inicializando estado de MyHomePage");
+    logger.i("initState - mounted: $mounted");
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    logger.i("didChangeDependencies - mounted: $mounted");
+  }
+
+  @override
+  void didUpdateWidget(covariant MyHomePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    logger.i("didUpdateWidget - mounted: $mounted");
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    logger.i("setState - mounted: $mounted");
+    super.setState(fn);
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    logger.i("reassemble - mounted: $mounted");
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    logger.i("deactivate - mounted: $mounted");
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    logger.i("dispose - mounted: $mounted");
   }
 
   @override
   Widget build(BuildContext context) {
-    logger.i('create state');
+    logger.i("build - mounted: $mounted");
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -33,28 +74,20 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.secondary,
       ),
       body: Center(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          color: Theme.of(context).colorScheme.primary,
-          child: Text(
-            'My home page',
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-          ),
+        child: ElevatedButton(
+          onPressed: () {
+            setState(() {
+              logger.i("onPressed, ejecutando setState");
+            });
+          },
+          child: const Text("Presiona para setState"),
         ),
       ),
-      floatingActionButton: Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.pink,
-            brightness: Brightness.dark,
-          ),
-        ),
-        child: FloatingActionButton(
-          onPressed: () {},
-          child: const Icon(Icons.add),
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          logger.i("FloatingActionButton presionado");
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
