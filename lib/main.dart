@@ -10,6 +10,7 @@ void main() {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
+//Logger
   final logger = Logger();
 
   @override
@@ -41,3 +42,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
