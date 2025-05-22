@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart'; 
 import 'package:aplicacion_3479a321lab3/pages/list_content.dart';
 import 'package:aplicacion_3479a321lab3/pages/about.dart';
+import 'package:aplicacion_3479a321lab3/Provider/app_data.dart'; 
 
 final logger = Logger();
 
@@ -15,33 +17,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // Constructor
   _MyHomePageState() {
     logger.i("_MyHomePageState - mounted: $mounted");
-  }
-
-  // CONTADOR
-  int _counter = 0;
-
-  void _increment() {
-    setState(() {
-      logger.i("Incrementando contador");
-      _counter++;
-    });
-  }
-
-  void _decrement() {
-    setState(() {
-      logger.i("Decrementando contador");
-      _counter--;
-    });
-  }
-
-  void _reset() {
-    setState(() {
-      logger.i("Reiniciando contador");
-      _counter = 0;
-    });
   }
 
   @override
@@ -90,6 +67,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     logger.i("build - mounted: $mounted");
 
+    final appData = Provider.of<AppData>(context);
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -121,21 +100,48 @@ class _MyHomePageState extends State<MyHomePage> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
+
+                // Mostrar el nombre del usuario
                 Text(
-                  'Contador: $_counter',
+                  'Bienvenid@, ${appData.userName}',
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
+                ),
+                const SizedBox(height: 10),
+
+                Text(
+                  'Contador: ${appData.counter}',
                   style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Theme.of(context).colorScheme.onPrimary,
                       ),
                 ),
                 const SizedBox(height: 20),
+
                 Wrap(
                   alignment: WrapAlignment.center,
                   spacing: 10,
                   runSpacing: 10,
                   children: [
-                    ElevatedButton(onPressed: _decrement, child: const Text('-')),
-                    ElevatedButton(onPressed: _increment, child: const Text('+')),
-                    ElevatedButton(onPressed: _reset, child: const Text('Reset')),
+                    // Botón restar deshabilitado si es !canReset
+                    ElevatedButton(
+                      onPressed: appData.canReset
+                          ? () => context.read<AppData>().decrement()
+                          : null,
+                      child: const Text('-'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => context.read<AppData>().increment(),
+                      child: const Text('+'),
+                    ),
+                    // Botón reset deshabilitado si es !canReset
+                    ElevatedButton(
+                      onPressed: appData.canReset
+                          ? () => context.read<AppData>().reset()
+                          : null,
+                      child: const Text('Reset'),
+                    ),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
@@ -147,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        if (_counter % 2 == 0) {
+                        if (appData.counter % 2 == 0) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => const ListContent()),

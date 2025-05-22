@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 import 'package:aplicacion_3479a321lab3/pages/home_page.dart';
+import 'package:aplicacion_3479a321lab3/Provider/app_data.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AppData(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-//Logger
   final logger = Logger();
 
   @override
@@ -38,8 +44,7 @@ class MyApp extends StatelessWidget {
           displaySmall: GoogleFonts.pacifico(),
         ),
       ),
-      home: MyHomePage(title: appName),
+      home: const MyHomePage(title: appName),
     );
   }
 }
-
