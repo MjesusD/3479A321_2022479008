@@ -4,8 +4,11 @@ import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:aplicacion_3479a321lab3/pages/home_page.dart';
 import 'package:aplicacion_3479a321lab3/Provider/app_data.dart';
+import 'package:aplicacion_3479a321lab3/services/database_helper.dart'; 
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Para servicios async antes de runApp
+  await DatabaseHelper().initializeDatabase(); // Inicializa la base de datos antes de runApp
   runApp(
     ChangeNotifierProvider(
       create: (_) => AppData(),
@@ -22,7 +25,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     logger.i('Logger is working!');
-    const appName = 'Custom Themes';
+    const appName = 'MyApp';
 
     return MaterialApp(
       title: appName,

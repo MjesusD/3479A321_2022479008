@@ -52,7 +52,7 @@ class ListContent extends StatelessWidget {
               onPressed: () {
                 Navigator.popUntil(context, (route) => route.isFirst);
               },
-              child: const Text('Volver al Home'),
+              child: const Text('Volver'),
             ),
             ElevatedButton(
               onPressed: () {

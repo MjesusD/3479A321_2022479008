@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:aplicacion_3479a321lab3/Provider/app_data.dart';
+import 'package:aplicacion_3479a321lab3/pages/preferences.dart'; 
 
 class About extends StatefulWidget {
   const About({super.key});
@@ -60,14 +61,17 @@ class _AboutState extends State<About> {
                   appData.setUserName(value);
                 },
               ),
+
               const SizedBox(height: 20),
 
-              SwitchListTile(
-                title: const Text('Permitir reiniciar contador'),
-                value: appData.canReset,
-                onChanged: (value) {
-                  appData.setCanReset(value);
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const PreferencesPage()),
+                  );
                 },
+                child: const Text('Ir a preferencias'),
               ),
 
               const SizedBox(height: 20),
@@ -90,6 +94,7 @@ class _AboutState extends State<About> {
                 },
                 child: const Text('Mostrar versión'),
               ),
+
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text('Volver'),
