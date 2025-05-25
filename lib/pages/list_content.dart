@@ -69,7 +69,7 @@ class ListContent extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const About()),
                 );
               },
-              child: const Text('Ir a: "About"'),
+              child: const Text('About'),
             ),
           ],
         ),

@@ -1,5 +1,5 @@
 class Activity {
-  int id;
+  final int id;
   DateTime fecha;
   String nombre;
 
