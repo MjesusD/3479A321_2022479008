@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
             IconButton(
               icon: Icon(Icons.refresh),
               onPressed: () {
-                appData.reset(); // solo si canReset es true
+                appData.reset(); //solo si canReset es true
               },
             ),
         ],
