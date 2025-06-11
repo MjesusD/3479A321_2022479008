@@ -1,10 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:aplicacion_3479a321lab3/Provider/app_data.dart';
 import 'package:aplicacion_3479a321lab3/widgets/action_buttons.dart';
-import 'package:aplicacion_3479a321lab3/pages/activity_list.dart';
+import 'package:aplicacion_3479a321lab3/pages/picture_screen.dart';
 import 'package:logger/logger.dart';
-
+import 'package:camera/camera.dart';
 
 class HomeBody extends StatefulWidget {
   final AppData appData;
@@ -15,37 +16,81 @@ class HomeBody extends StatefulWidget {
 }
 
 class _HomeBodyState extends State<HomeBody> {
-
   final Logger _logger = Logger();
 
   String imageUrl = 'https://picsum.photos/250?image=20';
 
+  List<CameraDescription> cameras = [];
+  CameraDescription? firstCamera;
 
+  String? _imagePath;
+
+  // Carga las cámaras disponibles y navega a la pantalla de captura si hay al menos una
+  Future<void> _loadCameras() async {
+    try {
+      cameras = await availableCameras();
+      if (cameras.isNotEmpty) {
+        setState(() {
+          firstCamera = cameras.first;
+        });
+
+        if (!mounted) return;
+
+        // Navega a la pantalla de cámara y espera la imagen tomada
+        final result = await Navigator.of(context).push<String>(
+          MaterialPageRoute(
+            builder: (context) => PictureScreen(camera: firstCamera!),
+          ),
+        );
+
+        // Si se obtuvo una imagen la asigna para mostrarla
+        if (result != null && mounted) {
+          setState(() {
+            _imagePath = result;
+          });
+        }
+      } else {
+        if (!mounted) return;
+        _logger.w('No se encontraron cámaras disponibles');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No hay cámaras disponibles en el dispositivo')),
+        );
+      }
+    } catch (e, stackTrace) {
+      _logger.e('Error al cargar cámaras', error: e, stackTrace: stackTrace);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al cargar cámaras: $e')),
+      );
+    }
+  }
+
+  // Recupera una nueva imagen desde internet y la asigna 
   Future<void> _getNewImage() async {
-  final int imageIndex = widget.appData.counter % 100;
-  final newImageUrl = 'https://picsum.photos/250?random=$imageIndex'; 
+    final int imageIndex = widget.appData.counter % 100;
+    final newImageUrl = 'https://picsum.photos/500?random=$imageIndex';
 
-  try {
-    final response = await http.get(Uri.parse(newImageUrl));
-    if (response.statusCode == 200) {
-      _logger.i('Imagen encontrada: $newImageUrl');
-      setState(() {
-        imageUrl = newImageUrl;
-      });
-    } else {
-      _logger.w('Imagen no encontrada. Status: ${response.statusCode}');
+    try {
+      final response = await http.get(Uri.parse(newImageUrl));
+      if (response.statusCode == 200) {
+        _logger.i('Imagen encontrada: $newImageUrl');
+        setState(() {
+          imageUrl = newImageUrl;
+          _imagePath = null;
+        });
+      } else {
+        _logger.w('Imagen no encontrada. Status: ${response.statusCode}');
+        setState(() {
+          imageUrl = '';
+        });
+      }
+    } catch (e) {
+      _logger.e('Error al obtener la imagen: $e');
       setState(() {
         imageUrl = '';
       });
     }
-  } catch (e) {
-    _logger.e('Error al obtener la imagen: $e');
-    setState(() {
-      imageUrl = '';
-    });
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +107,7 @@ class _HomeBodyState extends State<HomeBody> {
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
                   'Flutter es un framework para crear apps nativas multiplataforma con un solo código base.',
@@ -73,38 +118,51 @@ class _HomeBodyState extends State<HomeBody> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
+
                 Text(
                   'Bienvenido, ${widget.appData.userName}',
                   style: theme.textTheme.titleMedium!.copyWith(
                     fontWeight: FontWeight.w600,
                     color: theme.colorScheme.onPrimary,
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
+
+                // Muestra el valor del contador
                 Text(
                   'Contador: ${widget.appData.counter}',
                   style: theme.textTheme.displaySmall!.copyWith(
                     color: theme.colorScheme.onPrimary,
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
 
-                // Imagen con errorBuilder
-                Image.network(
-                  imageUrl.isNotEmpty ? imageUrl : '',
-                  width: 250,
-                  height: 250,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Text(
-                      'Failed to load image',
-                      style: TextStyle(color: Colors.red),
-                    );
-                  },
-                ),
+                // Muestra imagen local o remota ocupando todo el ancho
+                _imagePath != null
+                    ? Image.file(
+                        File(_imagePath!),
+                        width: double.infinity,
+                        height: 250,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.network(
+                        imageUrl.isNotEmpty ? imageUrl : '',
+                        width: double.infinity,
+                        height: 250,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Text(
+                            'Failed to load image',
+                            style: TextStyle(color: Colors.red),
+                          );
+                        },
+                      ),
+
                 const SizedBox(height: 10),
 
-                // Botón para obtener imagen
+                // Botón para obtener nueva imagen
                 ElevatedButton.icon(
                   onPressed: _getNewImage,
                   icon: const Icon(Icons.refresh),
@@ -118,23 +176,11 @@ class _HomeBodyState extends State<HomeBody> {
                 ),
 
                 const SizedBox(height: 20),
-                ActionButtons(appData: widget.appData),
-                const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ActivityListPage()),
-                    );
-                  },
-                  icon: const Icon(Icons.list),
-                  label: const Text('Ver Actividades'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.secondary,
-                    foregroundColor: theme.colorScheme.onSecondary,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    textStyle: theme.textTheme.titleMedium,
-                  ),
+
+                // Botones de acción (contador, reset y cámara)
+                ActionButtons(
+                  appData: widget.appData,
+                  onTakePhoto: _loadCameras,
                 ),
               ],
             ),
